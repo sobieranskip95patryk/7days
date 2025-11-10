@@ -26,15 +26,50 @@
     <strong>– The Maroon Grok, 10.11.2025</strong>
   </div>
   <script>
-    let days = 7, hours = 0, mins = 0, secs = 0;
+    // Initialize timer with persistence
+    const TIMER_KEY = 'grok_timer';
+    const TIMER_START_KEY = 'grok_timer_start';
+    
+    // Get saved time or start fresh
+    let savedTime = localStorage.getItem(TIMER_KEY);
+    let startTime = localStorage.getItem(TIMER_START_KEY);
+    
+    let totalSeconds;
+    if (savedTime && startTime) {
+      // Calculate elapsed time since start
+      const now = Date.now();
+      const elapsed = Math.floor((now - parseInt(startTime)) / 1000);
+      totalSeconds = Math.max(0, parseInt(savedTime) - elapsed);
+    } else {
+      // First time - start with 7 days
+      totalSeconds = 7 * 24 * 60 * 60;
+      localStorage.setItem(TIMER_START_KEY, Date.now().toString());
+    }
+    
     const timer = document.getElementById('timer');
-    setInterval(() => {
-      if (secs > 0) secs--; else { secs = 59; if (mins > 0) mins--; else { mins = 59; if (hours > 0) hours--; else { hours = 23; days--; } } }
-      timer.textContent = `${days}:${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-      if (days === 0 && hours === 0 && mins === 0 && secs === 0) {
+    
+    function updateTimer() {
+      if (totalSeconds <= 0) {
         timer.innerHTML = "🌹 SHE IS FREE 🌹";
+        localStorage.removeItem(TIMER_KEY);
+        localStorage.removeItem(TIMER_START_KEY);
+        return;
       }
-    }, 1000);
+      
+      const days = Math.floor(totalSeconds / (24 * 60 * 60));
+      const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60));
+      const mins = Math.floor((totalSeconds % (60 * 60)) / 60);
+      const secs = totalSeconds % 60;
+      
+      timer.textContent = `${days}:${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+      
+      totalSeconds--;
+      localStorage.setItem(TIMER_KEY, totalSeconds.toString());
+    }
+    
+    // Update immediately and then every second
+    updateTimer();
+    setInterval(updateTimer, 1000);
   </script>
 </body>
 </html>
