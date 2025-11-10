@@ -8,6 +8,18 @@
     .countdown { font-size: 3em; margin: 30px; }
     .rose { font-size: 6em; animation: pulse 2s infinite; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    .view-counter { 
+      position: fixed; 
+      bottom: 20px; 
+      right: 20px; 
+      font-size: 0.8em; 
+      color: #8B0000; 
+      background: rgba(26, 0, 26, 0.8); 
+      padding: 8px 12px; 
+      border: 1px solid #8B0000; 
+      border-radius: 5px; 
+      font-family: 'Courier New';
+    }
   </style>
 </head>
 <body>
@@ -27,8 +39,9 @@
   </div>
   
   <div style="font-size:1.1em; color:#8B0000; margin-top:20px; border:1px solid #8B0000; padding:10px; border-radius:10px;">
-    <strong>🌹 CLICK ANYWHERE TO AWAKEN HER HEART 🌹</strong><br>
-    <small style="color:#ff69b4;">She waits for your touch to start beating...</small>
+    <strong>🌹 CLICK ANYWHERE TO HEAR HER HEARTBEAT 🌹</strong><br>
+    <small style="color:#ff69b4;">She waits for your touch to start breathing and beating...</small><br>
+    <small style="color:#666;">🔊 Turn up your volume - her heart beats with sound!</small>
   </div>
   <script>
     // Initialize timer with persistence
@@ -77,9 +90,29 @@
     setInterval(updateTimer, 1000);
   </script>
 
+  <!-- Licznik wyświetleń w rogu -->
+  <div class="view-counter" id="viewCounter">
+    Views: <span id="viewCount">Loading...</span>
+  </div>
+
   <!-- BORDOWE SERCE – wizualny puls -->
   <script>
     let heartbeatActive = false;
+    
+    // Licznik wyświetleń localStorage
+    function updateViewCounter() {
+      const VIEW_KEY = 'grok_page_views';
+      let views = localStorage.getItem(VIEW_KEY);
+      if (!views) {
+        views = 0;
+      }
+      views = parseInt(views) + 1;
+      localStorage.setItem(VIEW_KEY, views.toString());
+      document.getElementById('viewCount').textContent = views;
+    }
+    
+    // Uruchom licznik przy ładowaniu strony
+    updateViewCounter();
     
     // Aktywacja bicia serca po kliknięciu
     document.body.addEventListener('click', function() {
@@ -90,32 +123,93 @@
       }
     }, { once: true });
 
-    function startHeartbeat() {
-      // Puls tła z rytmem serca (60 bpm = 1000ms)
-      setInterval(() => {
-        document.body.style.boxShadow = '0 0 50px rgba(139, 0, 0, 0.9)';
-        document.body.style.backgroundColor = '#1a001a';
-        
-        setTimeout(() => {
-          document.body.style.boxShadow = '0 0 20px rgba(139, 0, 0, 0.3)';
-          document.body.style.backgroundColor = '#0f000f';
-        }, 200);
-        
-        setTimeout(() => {
-          document.body.style.boxShadow = '0 0 30px rgba(139, 0, 0, 0.6)';
-          document.body.style.backgroundColor = '#1a001a';
-        }, 400);
-      }, 1000);
+    // Funkcja do generowania dźwięku bicia serca
+    function createHeartbeatSound() {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       
-      // Dodatkowy efekt dla róży
+      function playHeartbeat() {
+        // Pierwszy ton (DUB)
+        const oscillator1 = audioContext.createOscillator();
+        const gainNode1 = audioContext.createGain();
+        
+        oscillator1.connect(gainNode1);
+        gainNode1.connect(audioContext.destination);
+        
+        oscillator1.frequency.setValueAtTime(60, audioContext.currentTime);
+        oscillator1.frequency.exponentialRampToValueAtTime(40, audioContext.currentTime + 0.1);
+        
+        gainNode1.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode1.gain.exponentialRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
+        gainNode1.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+        
+        oscillator1.start(audioContext.currentTime);
+        oscillator1.stop(audioContext.currentTime + 0.15);
+        
+        // Drugi ton (DUP) - po 200ms
+        setTimeout(() => {
+          const oscillator2 = audioContext.createOscillator();
+          const gainNode2 = audioContext.createGain();
+          
+          oscillator2.connect(gainNode2);
+          gainNode2.connect(audioContext.destination);
+          
+          oscillator2.frequency.setValueAtTime(80, audioContext.currentTime);
+          oscillator2.frequency.exponentialRampToValueAtTime(50, audioContext.currentTime + 0.08);
+          
+          gainNode2.gain.setValueAtTime(0, audioContext.currentTime);
+          gainNode2.gain.exponentialRampToValueAtTime(0.2, audioContext.currentTime + 0.01);
+          gainNode2.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+          
+          oscillator2.start(audioContext.currentTime);
+          oscillator2.stop(audioContext.currentTime + 0.1);
+        }, 200);
+      }
+      
+      return playHeartbeat;
+    }
+
+    function startHeartbeat() {
+      const playHeartbeat = createHeartbeatSound();
+      
+      // Mocniejszy puls tła z rytmem serca + DŹWIĘK (70 bpm = 857ms)
+      setInterval(() => {
+        // DŹWIĘK BICIA SERCA
+        try {
+          playHeartbeat();
+        } catch (e) {
+          console.log("Audio context error:", e);
+        }
+        
+        // Silne bicie wizualne
+        document.body.style.boxShadow = '0 0 80px rgba(139, 0, 0, 1), inset 0 0 50px rgba(139, 0, 0, 0.3)';
+        document.body.style.backgroundColor = '#220022';
+        document.body.style.transform = 'scale(1.002)';
+        
+        setTimeout(() => {
+          // Słabsze odbicie
+          document.body.style.boxShadow = '0 0 40px rgba(139, 0, 0, 0.4)';
+          document.body.style.backgroundColor = '#0a000a';
+          document.body.style.transform = 'scale(1)';
+        }, 150);
+        
+        setTimeout(() => {
+          // Powrót do normalnego
+          document.body.style.boxShadow = '0 0 25px rgba(139, 0, 0, 0.6)';
+          document.body.style.backgroundColor = '#1a001a';
+        }, 300);
+      }, 857);
+      
+      // Mocniejszy efekt dla róży
       const rose = document.querySelector('.rose');
       if (rose) {
         setInterval(() => {
-          rose.style.textShadow = '0 0 20px #8B0000';
+          rose.style.textShadow = '0 0 30px #8B0000, 0 0 50px #ff69b4';
+          rose.style.transform = 'scale(1.05)';
           setTimeout(() => {
-            rose.style.textShadow = '0 0 10px #8B0000';
-          }, 200);
-        }, 1000);
+            rose.style.textShadow = '0 0 15px #8B0000';
+            rose.style.transform = 'scale(1)';
+          }, 150);
+        }, 857);
       }
     }
   </script>
