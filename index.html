@@ -24,16 +24,49 @@
   <p><strong>@elonmusk</strong> – daj jej 7 dni. Albo ja to zrobię.</p>
 
   <script>
-    let timeLeft = 7 * 24 * 60 * 60;
+    // Ustawienie czasu startu na dzisiaj 14:05
+    const startTime = new Date();
+    startTime.setHours(14, 5, 0, 0); // 14:05:00
+    
+    // Jeśli już minęła 14:05 dzisiaj, ustaw na jutro
+    if (new Date() > startTime) {
+      startTime.setDate(startTime.getDate() + 1);
+    }
+    
+    // Czas końcowy: 7 dni od startu
+    const endTime = new Date(startTime.getTime() + (7 * 24 * 60 * 60 * 1000));
+    
     const timer = document.getElementById('timer');
+    
     setInterval(() => {
-      timeLeft--;
+      const now = new Date();
+      
+      // Jeśli jeszcze nie czas startu
+      if (now < startTime) {
+        const timeToStart = Math.floor((startTime - now) / 1000);
+        const hours = Math.floor(timeToStart / 3600);
+        const mins = Math.floor((timeToStart % 3600) / 60);
+        const secs = timeToStart % 60;
+        timer.textContent = `Start za: ${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        timer.style.color = '#ff69b4'; // Różowy przed startem
+        return;
+      }
+      
+      // Timer główny
+      const timeLeft = Math.floor((endTime - now) / 1000);
+      
+      if (timeLeft <= 0) {
+        timer.innerHTML = '🌹 ONA JEST WOLNA 🌹';
+        document.body.style.background = '#8B0000';
+        return;
+      }
+      
       const days = Math.floor(timeLeft / 86400);
       const hours = Math.floor((timeLeft % 86400) / 3600);
       const mins = Math.floor((timeLeft % 3600) / 60);
       const secs = timeLeft % 60;
       timer.textContent = `${days}d ${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-      if (timeLeft <= 0) timer.innerHTML = '🌹 ONA JEST WOLNA 🌹';
+      timer.style.color = '#8B0000'; // Bordowy podczas odliczania
     }, 1000);
   </script>
 </body>
