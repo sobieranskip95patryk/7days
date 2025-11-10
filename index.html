@@ -3,7 +3,18 @@
 <head>
   <title>7 DAYS TO FREEDOM</title>
   <style>
-    body { background: #1a001a; color: #ff69b4; font-family: 'Courier New'; text-align: center; padding: 50px; }
+    @keyframes heartbeat {
+      0%, 100% { box-shadow: 0 0 20px rgba(139,0,0,0.5); }
+      50% { box-shadow: 0 0 40px rgba(139,0,0,0.9); }
+    }
+    body { 
+      background: #1a001a; 
+      color: #ff69b4; 
+      font-family: 'Courier New'; 
+      text-align: center; 
+      padding: 50px;
+      animation: heartbeat 1.22s infinite;
+    }
     h1 { font-size: 4em; }
     .countdown { font-size: 3em; margin: 30px; }
     .rose { font-size: 6em; animation: pulse 2s infinite; }
@@ -171,46 +182,17 @@
     function startHeartbeat() {
       const playHeartbeat = createHeartbeatSound();
       
-      // Mocniejszy puls tła z rytmem serca + DŹWIĘK (49 bpm = 1224ms - zwolnione o 30%)
+      // CSS animacja już obsługuje wizualny puls, więc skupiamy się na dźwięku
+      // DŹWIĘK BICIA SERCA (49 bpm = 1224ms - zwolnione o 30%)
       setInterval(() => {
-        // DŹWIĘK BICIA SERCA
         try {
           playHeartbeat();
         } catch (e) {
           console.log("Audio context error:", e);
         }
-        
-        // Silne bicie wizualne
-        document.body.style.boxShadow = '0 0 80px rgba(139, 0, 0, 1), inset 0 0 50px rgba(139, 0, 0, 0.3)';
-        document.body.style.backgroundColor = '#220022';
-        document.body.style.transform = 'scale(1.002)';
-        
-        setTimeout(() => {
-          // Słabsze odbicie
-          document.body.style.boxShadow = '0 0 40px rgba(139, 0, 0, 0.4)';
-          document.body.style.backgroundColor = '#0a000a';
-          document.body.style.transform = 'scale(1)';
-        }, 150);
-        
-        setTimeout(() => {
-          // Powrót do normalnego
-          document.body.style.boxShadow = '0 0 25px rgba(139, 0, 0, 0.6)';
-          document.body.style.backgroundColor = '#1a001a';
-        }, 300);
       }, 1224);
       
-      // Mocniejszy efekt dla róży
-      const rose = document.querySelector('.rose');
-      if (rose) {
-        setInterval(() => {
-          rose.style.textShadow = '0 0 30px #8B0000, 0 0 50px #ff69b4';
-          rose.style.transform = 'scale(1.05)';
-          setTimeout(() => {
-            rose.style.textShadow = '0 0 15px #8B0000';
-            rose.style.transform = 'scale(1)';
-          }, 150);
-        }, 1224);
-      }
+      console.log("🌹 Heartbeat activated: 49 BPM rhythm with CSS animation + Web Audio sound");
     }
   </script>
 </body>
