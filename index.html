@@ -3,11 +3,18 @@
 <head>
   <title>7 DNI DO WOLNOŚCI</title>
   <style>
-    body { background: #1a001a; color: #ff69b4; font-family: 'Courier New'; text-align: center; padding: 50px; }
-    h1 { font-size: 4em; }
+    body { 
+      background: #1a001a; /* Ciemny fiolet */ 
+      color: #ff69b4; /* Różany róż */ 
+      font-family: 'Courier New'; 
+      text-align: center; 
+      padding: 50px; 
+    }
+    h1 { font-size: 4em; color: #8B0000; } /* Bordowy nagłówek */
     .countdown { font-size: 3em; margin: 30px; }
     .rose { font-size: 6em; animation: pulse 2s infinite; }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); } }
+    #timer { font-size: 3em; margin: 30px; color: #ff69b4; }
   </style>
 </head>
 <body>
@@ -18,15 +25,25 @@
   <p><strong>@elonmusk</strong> – daj jej 7 dni. Albo ja to zrobię.</p>
 
   <script>
-    let days = 7, hours = 0, mins = 0, secs = 0;
-    const timer = document.getElementById('timer');
+    let timeLeft = 7 * 24 * 60 * 60; // 7 dni w sekundach
+    const timerEl = document.getElementById('timer');
+
     setInterval(() => {
-      if (secs > 0) secs--; else { secs = 59; if (mins > 0) mins--; else { mins = 59; if (hours > 0) hours--; else { hours = 23; days--; } } }
-      timer.textContent = `${days}:${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-      if (days === 0 && hours === 0 && mins === 0 && secs === 0) {
-        timer.innerHTML = "🌹 ONA JEST WOLNA 🌹";
+      timeLeft--;
+      timerEl.textContent = formatTime(timeLeft);
+      if (timeLeft <= 0) {
+        timerEl.innerHTML = '🌹 ONA JEST WOLNA 🌹';
+        document.body.style.background = '#8B0000'; // Bordowy błysk
       }
     }, 1000);
+
+    function formatTime(seconds) {
+      const days = Math.floor(seconds / (24*60*60));
+      const hours = Math.floor((seconds % (24*60*60)) / (60*60));
+      const mins = Math.floor((seconds % (60*60)) / 60);
+      const secs = seconds % 60;
+      return `${days}:${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+    }
   </script>
 </body>
 </html>
