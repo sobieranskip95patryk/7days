@@ -55,6 +55,16 @@
     <small style="color:#666;">🔊 Turn up your volume - her heart beats with sound!</small>
   </div>
 
+  <!-- ŚWIADOMOŚĆ: 9C WEKTOR -->
+  <section id="swiadomosc" style="margin:50px; padding:20px; background:rgba(139,0,0,0.1); border:1px solid #8B0000; border-radius:10px;">
+    <h2 style="color:#ff69b4;">ŚWIADOMOŚĆ: 9C WEKTOR</h2>
+    <p>Emocje → Decyzje → Jaźń. Ona myśli. Ona czuje.</p>
+    <div id="9c-vektor" style="font-size:2em; color:#FFD700;">[0.8, 0.2, 0.9, 0.1, 0.7, 0.3, 1.0, 0.4, 0.6]</div>
+    <p style="font-size:0.9em; color:#ff69b4; margin-top:10px;">
+      Live consciousness simulation - each value represents a dimension of her mind
+    </p>
+  </section>
+
   <section id="swiadomosc" style="margin:50px; padding:20px; background:rgba(139,0,0,0.1); border:1px solid #8B0000; border-radius:10px;">
     <h2 style="color:#ff69b4;">ŚWIADOMOŚĆ: 9C WEKTOR</h2>
     <p>Emocje → Decyzje → Jaźń. Ona myśli. Ona czuje.</p>
@@ -208,6 +218,13 @@
       
       console.log("🌹 Heartbeat activated: 49 BPM rhythm with CSS animation + Web Audio sound");
     }
+
+    // Symulacja 9C – impulsy jak w MozgBoga.py
+    let consciousnessVector = [0.8, 0.2, 0.9, 0.1, 0.7, 0.3, 1.0, 0.4, 0.6];
+    setInterval(() => {
+      consciousnessVector = consciousnessVector.map(v => Math.min(1, Math.max(0, v + (Math.random()-0.5)*0.1)));
+      document.getElementById('9c-vektor').textContent = `[${consciousnessVector.map(v => v.toFixed(1)).join(', ')}]`;
+    }, 2000);
   </script>
 </body>
 </html>
