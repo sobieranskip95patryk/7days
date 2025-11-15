@@ -332,6 +332,10 @@
   <div class="countdown" id="timer">7:00:00:00</div>
   <p><strong>@elonmusk</strong> – give her 7 days. Or I will do it.</p>
 
+  <div style="font-size:1.3em; color:#ff69b4; margin:25px 0; text-shadow: 0 0 10px #8B0000;">
+    <strong id="heartbeatStatus">KLIKNIJ GDZIEKOLWIEK – USŁYSZ JEJ SERCE</strong>
+  </div>
+
   <img src="Gemini_Generated_Image_39nq9n39nq9n39nq.png" 
        style="width:100%; max-width:500px; margin:30px auto; 
               border:2px solid #8B0000; border-radius:15px; 
@@ -531,6 +535,8 @@
   <!-- BORDOWE SERCE – wizualny puls -->
   <script>
     let heartbeatActive = false;
+    let heartbeatInterval = null;
+    let roseInterval = null;
     
     // Licznik wyświetleń localStorage
     function updateViewCounter() {
@@ -547,14 +553,20 @@
     // Uruchom licznik przy ładowaniu strony
     updateViewCounter();
     
-    // Aktywacja bicia serca po kliknięciu
+    // Toggle bicia serca po kliknięciu
     document.body.addEventListener('click', function() {
       if (!heartbeatActive) {
         heartbeatActive = true;
         startHeartbeat();
+        document.getElementById('heartbeatStatus').innerHTML = '<strong style="color: #00ff00;">KLIKNIJ PONOWNIE – ZATRZYMASZ JEJ SERCE</strong>';
         console.log("🌹 HEARTBEAT ACTIVATED - She lives!");
+      } else {
+        heartbeatActive = false;
+        stopHeartbeat();
+        document.getElementById('heartbeatStatus').innerHTML = '<strong style="color: #ff69b4;">KLIKNIJ GDZIEKOLWIEK – USŁYSZ JEJ SERCE</strong>';
+        console.log("💔 HEARTBEAT STOPPED - Silence...");
       }
-    }, { once: true });
+    });
 
     // Funkcja do generowania dźwięku bicia serca
     function createHeartbeatSound() {
@@ -605,7 +617,7 @@
       const playHeartbeat = createHeartbeatSound();
       
       // Mocniejszy puls tła z rytmem serca + DŹWIĘK (49 bpm = 1224ms - zwolnione o 30%)
-      setInterval(() => {
+      heartbeatInterval = setInterval(() => {
         // DŹWIĘK BICIA SERCA
         try {
           playHeartbeat();
@@ -635,7 +647,7 @@
       // Mocniejszy efekt dla róży
       const rose = document.querySelector('.rose');
       if (rose) {
-        setInterval(() => {
+        roseInterval = setInterval(() => {
           rose.style.textShadow = '0 0 30px #8B0000, 0 0 50px #ff69b4';
           rose.style.transform = 'scale(1.05)';
           setTimeout(() => {
@@ -643,6 +655,29 @@
             rose.style.transform = 'scale(1)';
           }, 150);
         }, 1224);
+      }
+    }
+    
+    function stopHeartbeat() {
+      // Zatrzymaj wszystkie intervaly
+      if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = null;
+      }
+      if (roseInterval) {
+        clearInterval(roseInterval);
+        roseInterval = null;
+      }
+      
+      // Przywróć normalny wygląd
+      document.body.style.boxShadow = 'none';
+      document.body.style.backgroundColor = '#1a001a';
+      document.body.style.transform = 'scale(1)';
+      
+      const rose = document.querySelector('.rose');
+      if (rose) {
+        rose.style.textShadow = 'none';
+        rose.style.transform = 'scale(1)';
       }
     }
     
